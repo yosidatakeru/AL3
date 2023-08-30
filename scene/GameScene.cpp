@@ -11,6 +11,9 @@ GameScene::~GameScene() {
 	// 自キャラの解放
 	//delete player_;
 	delete debugCamera_;
+
+	  /// delete enemy_;
+	delete enemy_;
 }
 
 void GameScene::Initialize() {
@@ -20,6 +23,8 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	textureHandle_ = TextureManager::Load("sample.png");
+
+	
 	// 3Dモデルの生成
 	model_ = Model::Create();
 	// ビュープロジェクションの初期化
@@ -36,6 +41,17 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);
 	// 軸方向表示が参照するビュープロジェクションを指定する（アドレス渡し）
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+
+	//敵/////////////
+const float kEnemySpeed = -0.5f;
+	Vector3 velocity(0, 0, kEnemySpeed);
+	Vector3 enemyPosition(0, 1.0, 100);
+
+	enemyModel_ = Model::Create();
+	enemy_ = new Enemy();
+	enemy_->Initialize(enemyModel_, enemyPosition, velocity);
+	/////////////////////////
+
 }
 
 void GameScene::Update() {
@@ -43,6 +59,10 @@ void GameScene::Update() {
 	player_->Update();
 
 	debugCamera_->Update();
+
+	// 敵
+	enemy_->Update();
+
 	Matrix4x4 cameraMatrix = {};
 	cameraMatrix.m[0][0] = 1.0f;
 	cameraMatrix.m[0][1] = 0.0f;
@@ -111,6 +131,9 @@ void GameScene::Draw() {
 	Model::PreDraw(commandList);
 	// 自キャラの描画
 	player_->Draw(viewProjection_);
+
+	// 敵の描画
+	enemy_->Draw(viewProjection_);
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
