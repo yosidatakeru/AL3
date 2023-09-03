@@ -2,8 +2,11 @@
 #include <ViewProjection.h>
 #include "Model.h"
 #include "WorldTransform.h"
+#include "EnemyBullet.h"
 class Enemy {
 public:
+	~Enemy();
+
 	Vector3 velocity_;
 	//	//Vector3 velociy_;
 	//	/// <summary>
@@ -28,6 +31,10 @@ public:
 
 	void LeaveUpdate();
 
+	//攻撃フェイズ初期化
+	void PhaseInitialize();
+
+	void Fire();
 
 
 private:
@@ -37,7 +44,9 @@ private:
 	Model* model_ = nullptr;
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
-	// Enemy* enemy_ = nullptr;
+	
+	std::list<EnemyBullet*> bullets_;
+
 
 	// enum宣言
 	enum class Phase {
@@ -45,4 +54,8 @@ private:
 		Leave,    // 離脱
 	};
 	Phase phase_ = Phase();
+
+	static const int kFireInterval = 60;
+
+	int32_t FireTimer = 0;
 };

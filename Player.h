@@ -38,6 +38,9 @@ public:
 	//// 弾
 	std::list<PlayerBullet*> bullets_;
 
+	
+
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;

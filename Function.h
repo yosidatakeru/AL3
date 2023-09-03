@@ -26,5 +26,19 @@ Vector3 Transform(const Vector3 vector, const Matrix4x4 matrix);
 // AffineMatrix
 Matrix4x4 MakeAffineMatrix(const Vector3 scale, const Vector3 rotate, const Vector3 translate);
 
+Matrix4x4 Inverse(const Matrix4x4 m);
+
+Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
+
+float Cot(float theta);
+
+// Projection
+Matrix4x4 MakeOrthographicMatrix(
+    float left, float top, float right, float bottom, float neaClip, float farClip);
+
+Matrix4x4 MakeViewportMatrix(
+    float left, float top, float width, float height, float minDepth, float maxDepth);
+
+
 // Translate
 Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
