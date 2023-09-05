@@ -3,7 +3,11 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include "EnemyBullet.h"
-class Enemy {
+
+class Player;
+
+class Enemy 
+{
 public:
 	~Enemy();
 
@@ -36,6 +40,11 @@ public:
 
 	void Fire();
 
+	void SetPlayer(Player* player) { player_ = player; }
+
+	Vector3 GetWorldPosition();
+
+	Vector3 LerpFanc(Vector3 v1, Vector3 v2);
 
 private:
 	// ワールドトランスホーム:
@@ -49,7 +58,8 @@ private:
 
 
 	// enum宣言
-	enum class Phase {
+	enum class Phase 
+	{
 		Approach, // 接近
 		Leave,    // 離脱
 	};
@@ -58,4 +68,9 @@ private:
 	static const int kFireInterval = 60;
 
 	int32_t FireTimer = 0;
+
+	Player* player_ = nullptr;
+
+
+
 };

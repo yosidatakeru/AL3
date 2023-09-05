@@ -16,11 +16,12 @@ GameScene::~GameScene() {
 	delete enemy_;
 }
 
+
+
+
 void GameScene::Initialize() {
 
-	//敵に自分のアドレスを渡す
-
-	//enemy_->SetPlayer(player_);
+	
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
@@ -41,9 +42,7 @@ void GameScene::Initialize() {
 	// デバックカメラの生成
 	debugCamera_ = new DebugCamera(720, 1280);
 
-	// 敵キャラに自キャラのアドレスを渡す
-	//enemy_->SetPlayer(player_);
-
+	
 
 	// 軸方向表示の表示を有効化する
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -58,6 +57,10 @@ const float kEnemySpeed = -0.5f;
 	enemyModel_ = Model::Create();
 	enemy_ = new Enemy();
 	enemy_->Initialize(enemyModel_, enemyPosition, velocity);
+	
+	// 敵キャラに自キャラのアドレスを渡す
+	enemy_->SetPlayer(player_);
+
 	/////////////////////////
 
 }
@@ -116,6 +119,9 @@ void GameScene::Update() {
 
 
 }
+
+
+
 
 void GameScene::Draw() {
 

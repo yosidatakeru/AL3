@@ -38,7 +38,7 @@ public:
 	//// 弾
 	std::list<PlayerBullet*> bullets_;
 
-	
+	Vector3 GetWorldPosition();
 
 
 private:

@@ -1,7 +1,7 @@
 ﻿#include "Enemy.h"
 #include "Function.h"
 #include <cassert>
-
+//#include"Player.h"
 
 
 
@@ -54,11 +54,14 @@ Enemy::~Enemy()
 	{
 		phase_ = Phase::Leave;
 	}
+
 	FireTimer--;
-	if (FireTimer <= 0) {
+	if (FireTimer <= 0) 
+	{
 		Fire();
 		FireTimer = kFireInterval;
 	}
+
     }
 
 
@@ -125,6 +128,28 @@ void Enemy::Update()
 
 
 
+Vector3 Enemy::GetWorldPosition() {
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
+}
+
+
+Vector3 Enemy::LerpFanc(Vector3 v1, Vector3 v2) 
+{
+	Vector3 result;
+
+	result.x = v2.x - v1.x;
+	result.y = v2.y - v1.y;
+	result.z = v2.z - v1.z;
+
+	return result;
+}
+
+
 
 
     void Enemy::Draw(ViewProjection& viewProjection_) 
@@ -141,12 +166,22 @@ void Enemy::Update()
     }
 
 
-	void Enemy::Fire() {
+	void Enemy::Fire()
+	{
 	const float kBulletSpeed = -1.0f;
-	Vector3 velocity(0, 0, kBulletSpeed);
 
+	
+Vector3 PlayerPos = player_->GetWorldPosition();
+	Vector3 EnemyPos = GetWorldPosition();
+
+	Vector3 PiEnLerp = LerpFanc(EnemyPos, PlayerPos);
+
+	Vector3 PiEnNormalize = Normalize(PiEnLerp);
+
+	Vector3 velocity = PiEnNormalize;
 	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 
+	
 	// intealize
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
