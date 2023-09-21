@@ -16,6 +16,8 @@ GameScene::~GameScene() {
 	delete enemy_;
 
 	delete skydomeModel_;
+
+	delete railCamera_;
 }
 
 
@@ -88,7 +90,26 @@ const float kEnemySpeed = -0.5f;
 
 	/////////////////////////
 
+	railCamera_ = new RailCamera();
+
+	// 初期化
+	Vector3 radian = {0.0f, 0.0f,0.0f};
+
+	railCamera_->Initialize(player_->GetWorldPosition(), radian);
+
+	//親子関係
+	//  親子関係を結ぶ
+	//  自キャラとレールカメラの親子関係を結ぶ
+	player_->SetParent(&railCamera_->GetWorldTransform());
+
+
+
+
 }
+
+
+
+
 
 //これはあくまで定義下だけUpdateで呼び出さないと意味がない
 void GameScene::CheckAllCollision() {
@@ -169,6 +190,8 @@ void GameScene::CheckAllCollision() {
 
 
 
+
+
 void GameScene::Update()
 {
 	// 自キャラの更新
@@ -182,6 +205,8 @@ void GameScene::Update()
 	skydome_->Update();
 
 	CheckAllCollision();
+
+	
 
 	Matrix4x4 cameraMatrix = {};
 	cameraMatrix.m[0][0] = 1.0f;
@@ -212,9 +237,10 @@ void GameScene::Update()
 
 #endif
 	if (isDebgCameraActive_) {
-		debugCamera_->Update();
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		railCamera_->Update();
+		
+		viewProjection_.matView = railCamera_->viewProjection_.matView;
+		viewProjection_.matProjection = railCamera_->viewProjection_.matProjection;
 		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
@@ -224,6 +250,8 @@ void GameScene::Update()
 
 
 }
+
+
 
 
 

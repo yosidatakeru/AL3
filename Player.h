@@ -49,6 +49,12 @@ public:
 
 	const float_t GetRadius() { return radius_; };
 
+// <summary>
+	/// 親となるワールドトランスフォームをセット
+	/// </summary>
+	/// <param name="parent"></param>
+	void SetParent(const WorldTransform* parent);
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
