@@ -11,7 +11,7 @@ public:
 	void Update();
 
 	// 描画
-	void Draw(ViewProjection viewProjection);
+	void Draw(ViewProjection& viewProjection);
 
 private:
 	// ワールド変換データ

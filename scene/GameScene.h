@@ -11,7 +11,7 @@
 #include "WorldTransform.h"
 #include <DebugCamera.h>
 #include"Enemy.h"
-
+#include"Skydome.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -67,4 +67,14 @@ private: // メンバ変数
 	DebugCamera* debugCamera_ = nullptr;
 	Model* enemyModel_ = nullptr;
 	Enemy* enemy_ = nullptr;
+
+	#pragma region 天球のメンバ変数
+	// テクスチャハンドル
+	uint32_t skydomeTextureHandle_ = 0u;
+
+	// 3Dモデル
+	Model* skydomeModel_ = nullptr;
+
+	// 天球ポインタ
+	Skydome* skydome_ = nullptr;
 };

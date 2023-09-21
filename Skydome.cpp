@@ -1,9 +1,7 @@
 ﻿#include "Skydome.h"
 #include <Function.h>
-
-    // 初期化
-    void
-    Skydome::Initialize(Model* model, uint32_t textureHandle) {
+// 初期化
+void Skydome::Initialize(Model* model, uint32_t textureHandle) {
 	this->model_ = model;
 	this->textureHandle_ = textureHandle;
 
@@ -18,6 +16,7 @@ void Skydome::Update() {
 	worldTransform_.TransferMatrix();
 
 	worldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
+	// 小さすぎたかも・・
 	worldTransform_.scale_ = {100.0f, 100.0f, 100.0f};
 
 	worldTransform_.matWorld_ = MakeAffineMatrix(
@@ -28,4 +27,4 @@ void Skydome::Update() {
 }
 
 // 描画
-void Skydome::Draw(ViewProjection viewProjection) { model_->Draw(worldTransform_, viewProjection); }
+void Skydome::Draw(ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection); }

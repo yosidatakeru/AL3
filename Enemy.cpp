@@ -13,6 +13,7 @@ Enemy::~Enemy()
 	{
 		delete bullet;
 	}
+	delete model_;
 }
 
 

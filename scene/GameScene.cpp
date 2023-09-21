@@ -14,6 +14,8 @@ GameScene::~GameScene() {
 
 	  /// delete enemy_;
 	delete enemy_;
+
+	delete skydomeModel_;
 }
 
 
@@ -42,7 +44,30 @@ void GameScene::Initialize() {
 	// デバックカメラの生成
 	debugCamera_ = new DebugCamera(720, 1280);
 
+
+	// 天球
+
+	// 生成
+	skydome_ = new Skydome();
+
+	// フォルダの名前を指定してね
+	// 読み込むファイルと同じフォルダ名にしないと✕
+	skydomeModel_ = Model::CreateFromOBJ("CelestialSphere", true);
+
+	// テクスチャ読み込み
+	skydomeTextureHandle_ = TextureManager::Load("CelestialSphere/uvChecker.png");
+
+	// 天球の初期化
+	skydome_->Initialize(skydomeModel_, skydomeTextureHandle_);
+
 	
+	// ビュープロジェクション
+	// forZを適度に大きい値に変更する
+	// 大きくしすぎるとZファイティングになるよ
+	viewProjection_.farZ = 1200.0f;
+	// 初期化
+	viewProjection_.Initialize();
+
 
 	// 軸方向表示の表示を有効化する
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -144,7 +169,8 @@ void GameScene::CheckAllCollision() {
 
 
 
-void GameScene::Update() {
+void GameScene::Update()
+{
 	// 自キャラの更新
 	player_->Update();
 
@@ -152,6 +178,8 @@ void GameScene::Update() {
 
 	// 敵
 	enemy_->Update();
+
+	skydome_->Update();
 
 	CheckAllCollision();
 
@@ -224,14 +252,18 @@ void GameScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
+	
+	/// <summary>
+	/// ここに3Dオブジェクトの描画処理を追加できる
+	/// </summary>
+
 	// 自キャラの描画
 	player_->Draw(viewProjection_);
 
 	// 敵の描画
 	enemy_->Draw(viewProjection_);
-	/// <summary>
-	/// ここに3Dオブジェクトの描画処理を追加できる
-	/// </summary>
+
+	skydome_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
