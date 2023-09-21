@@ -34,8 +34,30 @@ void PlayerBullet::Update()
 	}
 }
 
+// 衝突を検出したら呼び出されるコールバック関数
+void PlayerBullet::OnCollision() { isDead_ = true; }
+
+
+// ワールド座標を取得
+Vector3 PlayerBullet::GetWorldPosition()
+{
+	Vector3 worldPos;
+
+	// ワールド行列の「平行移動成分」を取得(ワールド座標)
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}
+
+
 void PlayerBullet::Draw(ViewProjection& viewProjection_) 
 {
-	// モデルの描画
-	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	if (isDead_ == false)
+	{
+		//モデルの描画
+		 model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	}
+	
 }

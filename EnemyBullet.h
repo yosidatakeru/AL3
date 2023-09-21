@@ -17,6 +17,14 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+
+	float_t GetRadius() { return radius_; }
+
 private:
 	uint32_t textureHandle_=0u;
 	Model* model_;
@@ -25,4 +33,7 @@ private:
 	Vector3 kVelocity_ = {};
 
 	bool isDead_ = false;
+
+	
+    const float_t radius_ = 1.0f;
 };

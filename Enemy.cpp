@@ -149,6 +149,8 @@ Vector3 Enemy::LerpFanc(Vector3 v1, Vector3 v2)
 	return result;
 }
 
+void Enemy::OnCollision() {}
+
 
 
 

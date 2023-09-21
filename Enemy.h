@@ -46,6 +46,13 @@ public:
 
 	Vector3 LerpFanc(Vector3 v1, Vector3 v2);
 
+	//float_t GetRadius() { return radius_; }
+
+	// 弾リストを取得
+	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+	// 衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
 private:
 	// ワールドトランスホーム:
 	WorldTransform worldTransform_;
@@ -70,6 +77,8 @@ private:
 	int32_t FireTimer = 0;
 
 	Player* player_ = nullptr;
+
+		const float_t radius_ = 1.0f;
 
 
 

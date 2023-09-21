@@ -30,7 +30,16 @@ public:
 	/// </summary>
 	void Draw(ViewProjection& viewProjection_);
 
-private:
+
+	// 衝突を検出したら呼び出されるコールバック関数
+		void OnCollision();
+
+		Vector3 GetWorldPosition();
+
+
+		const float_t GetRadius() { return radius_; };
+
+	private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
@@ -40,6 +49,7 @@ private:
 	static const int32_t kLifeTime = 60 * 5;
 
 
+	float_t radius_ = 1.0f;
 	// デストタima
 	int32_t deathTimer_ = kLifeTime;
 
