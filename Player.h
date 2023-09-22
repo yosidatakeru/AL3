@@ -129,5 +129,10 @@ public:
 	// カメラから照準オブジェクトの距離
 	const float kDistanceTestObject = 100.0f;
 
+	/* ----- GamePad ゲームパッド ----- */
+
+	// ゲームパッドの状態を得る変数(XINPUT)
+	XINPUT_STATE joyState_;
+
 
 };
