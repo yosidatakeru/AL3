@@ -119,7 +119,7 @@ public: // メンバ関数
 	/// テクスチャハンドルの設定
 	/// </summary>
 	/// <param name="textureHandle">テクスチャハンドル</param>
-	void SetTextureHandle(uint32_t textureHandle);
+	//void SetTextureHandle(uint32_t textureHandle);
 
 	uint32_t GetTextureHandle() const { return textureHandle_; }
 

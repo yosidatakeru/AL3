@@ -68,20 +68,67 @@ void Player::Update(ViewProjection& viewProjection) {
      position2DReticle_ = GetReticleWorldPosition();
 
 	// ビューポート行列
-	matViewport_ = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+	//matViewport_ = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
 
 	// ビュー行悦人プロジェクション行列、ビューポート行列を合成する
-     matViewProjectionViewport_ =
-	    Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport_));
+    /* matViewProjectionViewport_ =
+	    Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport_));*/
 
 	// ワールド->スクリーン座標変換(ここで3Dから2Dになる)
-	position2DReticle_ = Transform(position2DReticle_, matViewProjectionViewport_);
+	//position2DReticle_ = Transform(position2DReticle_, matViewProjectionViewport_);
 
 	// スプライトにレティクルに座標指定
 	sprite2DReticle_->SetPosition(Vector2(position2DReticle_.x, position2DReticle_.y));
 
 	//////////////////////////
+	// マウス座標(スクリーン座標)を取得する
+	GetCursorPos(&mousePosition_);
 
+	// クライアントエリア座標に変換する
+	hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &mousePosition_);
+
+	Vector2 reticlePosition = {
+	    float(position2DReticle_.x),
+	    float(position2DReticle_.y),
+	};
+	// マウス座標をを2Dレティクルのスプライトに代入する
+	sprite2DReticle_->SetPosition(Vector2(float(mousePosition_.x), float(mousePosition_.y)));
+
+	// ビュープロジェクションビューポート合成行列
+	matVPV_ = Multiply(
+	    viewProjection.matView,
+	    Multiply(
+	        viewProjection.matProjection,
+	        MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1)));
+
+	// 合成行列の逆行列を計算する
+	matInverseVPV_ = Inverse(matVPV_);
+
+	// スクリーン座標
+	posNear_ = Vector3(float(spritePosition_.x), float(spritePosition_.y), 0);
+	posFar_ = Vector3(float(spritePosition_.x), float(spritePosition_.y), 1);
+
+	// スクリーン座標系からワールド座標系へ
+	posNear_ = Transform(posNear_, matInverseVPV_);
+	posFar_ = Transform(posFar_, matInverseVPV_);
+
+	// 3Dレティクルの座標計算
+	// マウスレイの方向
+	mouseDirection_ = Subtract(posNear_, posFar_);
+	mouseDirection_ = Add(posNear_, posFar_);
+	mouseDirection_ = Normalize(mouseDirection_);
+
+	// カメラから照準オブジェクトの距離
+	worldTransform3DReticle_.translation_ = {
+	    posNear_.x + mouseDirection_.x * kDistanceTestObject,
+	    posNear_.y + mouseDirection_.y * kDistanceTestObject,
+	    posNear_.z + mouseDirection_.z * kDistanceTestObject,
+	};
+
+	// worldTransform3DReticleのワールド行列の更新と転送
+	worldTransform3DReticle_.UpdeateMatrix();
+	worldTransform3DReticle_.TransferMatrix();
 
 	////行列を定数バッファに転送する
 	worldTransform_.TransferMatrix();
@@ -215,7 +262,7 @@ void Player::OnCollision() {}
 void Player::Draw(ViewProjection& viewProjection_) {
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 	
-	model_->Draw(worldTransform3DReticle_, viewProjection_, ReticleTextureHandle_);
+	//model_->Draw(worldTransform3DReticle_, viewProjection_, ReticleTextureHandle_);
 	
 	for (PlayerBullet* bullet : bullets_) 
 	{

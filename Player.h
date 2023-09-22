@@ -118,7 +118,16 @@ public:
 	// スプライトの座標取得用
 	Vector2 spritePosition_;
 
+	// マウス座標
+	POINT mousePosition_;
 
+	HWND hwnd = nullptr;
 	
-	
+	// マウス例の方向
+	Vector3 mouseDirection_;
+
+	// カメラから照準オブジェクトの距離
+	const float kDistanceTestObject = 100.0f;
+
+
 };
