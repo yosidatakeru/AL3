@@ -41,6 +41,10 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 void Player::Update(ViewProjection& viewProjection) {
 
 
+
+#pragma region 2-14
+
+	
 	//////////////////
 	// 時期の3dレティクルの距離
 	const float kDistancePlayerTo3DReticle = 50.0f;
@@ -81,6 +85,10 @@ void Player::Update(ViewProjection& viewProjection) {
 	sprite2DReticle_->SetPosition(Vector2(position2DReticle_.x, position2DReticle_.y));
 
 	//////////////////////////
+#pragma endregion
+
+#pragma region 2-15
+
 	// マウス座標(スクリーン座標)を取得する
 	GetCursorPos(&mousePosition_);
 
@@ -106,8 +114,8 @@ void Player::Update(ViewProjection& viewProjection) {
 	matInverseVPV_ = Inverse(matVPV_);
 
 	// スクリーン座標
-	posNear_ = Vector3(float(spritePosition_.x), float(spritePosition_.y), 0);
-	posFar_ = Vector3(float(spritePosition_.x), float(spritePosition_.y), 1);
+	posNear_ = Vector3(float(mousePosition_.x), float(mousePosition_.y), 0);
+	posFar_ = Vector3(float(mousePosition_.x), float(mousePosition_.y), 1);
 
 	// スクリーン座標系からワールド座標系へ
 	posNear_ = Transform(posNear_, matInverseVPV_);
@@ -128,10 +136,14 @@ void Player::Update(ViewProjection& viewProjection) {
 
 	// worldTransform3DReticleのワールド行列の更新と転送
 	worldTransform3DReticle_.UpdeateMatrix();
-	worldTransform3DReticle_.TransferMatrix();
+	//worldTransform3DReticle_.TransferMatrix();
+
+	
+#pragma endregion
+
 
 	////行列を定数バッファに転送する
-	worldTransform_.TransferMatrix();
+	//worldTransform_.TransferMatrix();
 
 	//レティクル定義
 	//ReticleUpdate(viewProjection);
@@ -173,8 +185,6 @@ void Player::Update(ViewProjection& viewProjection) {
 		worldTransform_.rotation_.y += kRotSpeed;
 	}
 
-	//攻撃
-	Attack();
 
 	for (PlayerBullet* bullet : bullets_) 
 	{
@@ -194,10 +204,13 @@ void Player::Update(ViewProjection& viewProjection) {
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 	////平行移動行列
 
-	worldTransform_.matWorld_ = MakeAffineMatrix(
-	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	/*worldTransform_.matWorld_ = MakeAffineMatrix(
+	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);*/
 
+	// アフィン行列更新、行列転送
 	worldTransform_.UpdeateMatrix();
+	//攻撃
+	Attack();
 	
 	
 	//弾の寿命
@@ -228,13 +241,13 @@ void Player::Attack()
 	if (input_->TriggerKey(DIK_SPACE)) 
 	{
 		
-		Vector3 velocity(0, 0, kBulletSpeed);
+		Vector3 velocity(0 , 0, kBulletSpeed);
 
 
+	
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initalize(model_, worldTransform_.translation_, velocity);
-		
+		//
 		
 
 		velocity = Subtract(GetReticleWorldPosition(), GetWorldPosition());
@@ -243,13 +256,15 @@ void Player::Attack()
 		    Normalize(velocity).x * kBulletSpeed,
 		    Normalize(velocity).y * kBulletSpeed,
 		    Normalize(velocity).z * kBulletSpeed,
+
 		};
-		
+
+		newBullet->Initalize(model_, worldTransform_.translation_, velocity);
+			
+
 		//回転に合わせる
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-
-
-		
+		//velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+		// 
 		// 弾を登録する
 		bullets_.push_back(newBullet);
 	}
@@ -293,10 +308,10 @@ Vector3 Player::GetReticleWorldPosition() {
 	// ワールド座標を取得
 	Vector3 worldPos{};
 
-	// ワールド行列の平行移動成分を取得(ワールド座標)
-	worldPos.x = worldTransform_.matWorld_.m[3][0];
-	worldPos.y = worldTransform_.matWorld_.m[3][1];
-	worldPos.z = worldTransform_.matWorld_.m[3][2];
+// ワールド行列の平行移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
+	worldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
+	worldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
 
 	return worldPos;
 }

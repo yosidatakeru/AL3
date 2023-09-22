@@ -71,7 +71,7 @@ public:
 	private:
 	// ワールド変換データ
 
-		const float kBulletSpeed = 5.0f;
+		const float kBulletSpeed = 10.0f;
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0u;
