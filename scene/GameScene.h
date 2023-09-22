@@ -62,7 +62,7 @@ private: // メンバ変数
 	// 3Dモデル
 	Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0;
-	ViewProjection viewProjection_;
+	
 	Player* player_ = nullptr;
 	bool isDebgCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
@@ -79,4 +79,9 @@ private: // メンバ変数
 	// 天球ポインタ
 	Skydome* skydome_ = nullptr;
 	RailCamera* railCamera_ = nullptr;
+
+	uint32_t playerReticleTextureHandle_ = 0;
+
+	// ビュープロジェクション
+    ViewProjection viewProjection_;
 };

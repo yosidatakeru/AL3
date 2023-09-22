@@ -2,7 +2,7 @@
 #include "Function.h"
 #include <ImguiManager.h>
 #include <cassert>
-
+#include<WinApp.h>
 
 
 // デストラクタ
@@ -13,6 +13,9 @@ Player::~Player()
 		delete bullet;
 	}
 
+	
+	// スプライトの解放
+	delete sprite2DReticle_;
 }
 
 
@@ -28,10 +31,14 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	// シングルトンインスタンスを取得
 	input_ = Input::GetInstance();
 
+	// スプライト生成
+	sprite2DReticle_ = Sprite::Create(
+	    ReticleTextureHandle_, {640.0f, 500.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	
 	//レティクル
 	worldTransform3DReticle_.Initialize();
 }
-void Player::Update() {
+void Player::Update(ViewProjection& viewProjection) {
 
 
 	//////////////////
@@ -54,7 +61,26 @@ void Player::Update() {
 	worldTransform3DReticle_.translation_ = newOffset;
 	worldTransform3DReticle_.UpdeateMatrix();
 	worldTransform3DReticle_.TransferMatrix();
-//////////////////////////
+
+
+	
+	// 3Dレティクルのワールド座標から、ワールド座標を取得
+     position2DReticle_ = GetReticleWorldPosition();
+
+	// ビューポート行列
+	matViewport_ = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+
+	// ビュー行悦人プロジェクション行列、ビューポート行列を合成する
+     matViewProjectionViewport_ =
+	    Multiply(viewProjection.matView, Multiply(viewProjection.matProjection, matViewport_));
+
+	// ワールド->スクリーン座標変換(ここで3Dから2Dになる)
+	position2DReticle_ = Transform(position2DReticle_, matViewProjectionViewport_);
+
+	// スプライトにレティクルに座標指定
+	sprite2DReticle_->SetPosition(Vector2(position2DReticle_.x, position2DReticle_.y));
+
+	//////////////////////////
 
 
 	////行列を定数バッファに転送する
@@ -228,6 +254,12 @@ Vector3 Player::GetReticleWorldPosition() {
 	return worldPos;
 }
 
+
+void Player::DrawUI() 
+{
+	// 2Dレティクル描画
+	sprite2DReticle_->Draw();
+}
 
 void Player::SetParent(const WorldTransform* parent) {
 

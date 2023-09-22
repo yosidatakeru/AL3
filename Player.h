@@ -5,6 +5,7 @@
 #include "Input.h"
 #include"PlayerBullet.h"
 #include<list>
+#include<Sprite.h>
 class Player {
 
 	/// <summary>
@@ -23,7 +24,7 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update(ViewProjection &viewProjection);
 
 	/// <summary>
 	/// 描画
@@ -50,6 +51,12 @@ public:
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; };
 
 	const float_t GetRadius() { return radius_; };
+
+	/// <summary>
+	/// UI描画
+	/// </summary>
+	void DrawUI();
+
 
 // <summary>
 	/// 親となるワールドトランスフォームをセット
@@ -83,4 +90,35 @@ public:
 
 		// テクスチャハンドル
 	uint32_t ReticleTextureHandle_ = 0u;
+
+	/* ----- 2DReticle 2Dレティクル ----- */
+
+	// スプライト生成
+	Sprite* sprite2DReticle_ = nullptr;
+
+	// レティクルの2D座標
+	Vector3 position2DReticle_;
+
+	// ビューポート行列
+	Matrix4x4 matViewport_;
+
+	// ビュー行列とプロジェクション行列
+	Matrix4x4 matViewProjectionViewport_;
+
+	// ビュープロジェクションビューポート合成行列
+	Matrix4x4 matVPV_;
+
+	// 合成行列の逆行列
+	Matrix4x4 matInverseVPV_;
+
+	// スクリーン座標
+	Vector3 posNear_;
+	Vector3 posFar_;
+
+	// スプライトの座標取得用
+	Vector2 spritePosition_;
+
+
+	
+	
 };

@@ -33,3 +33,10 @@ Matrix4x4 Inverse(const Matrix4x4 m);
 
 // 減算
 Vector3 Subtract(const Vector3 v1, const Vector3 v2);
+
+// viewportMatrix
+Matrix4x4 MakeViewportMatrix(
+    float left, float top, float width, float height, float minDepth, float maxDepth);
+
+// 座標変換
+Vector3 Transform(Vector3 vector, Matrix4x4 matrix);

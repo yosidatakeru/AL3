@@ -32,6 +32,8 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	textureHandle_ = TextureManager::Load("sample.png");
+	//// レティクル
+	 playerReticleTextureHandle_ = TextureManager::Load("reticle.png");
 
 	
 	// 3Dモデルの生成
@@ -194,7 +196,7 @@ void GameScene::CheckAllCollision() {
 
 void GameScene::Update() {
 	// 自キャラの更新
-	player_->Update();
+	player_->Update(viewProjection_);
 
 	debugCamera_->Update();
 
@@ -303,7 +305,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	/* ----- Player 自キャラ ----- */
 
+	player_->DrawUI();
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
