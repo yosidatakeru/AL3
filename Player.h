@@ -37,9 +37,11 @@ public:
 
 	//// 弾
 	std::list<PlayerBullet*> bullets_;
-
+	//プレイヤーの位置
 	Vector3 GetWorldPosition();
 
+	// ワールド座標を取得
+	Vector3 GetReticleWorldPosition();
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
@@ -55,8 +57,14 @@ public:
 	/// <param name="parent"></param>
 	void SetParent(const WorldTransform* parent);
 
-private:
+
+	//レティクルの位置
+	void ReticleUpdate(ViewProjection viewProjection);
+	
+	private:
 	// ワールド変換データ
+
+		const float kBulletSpeed = 5.0f;
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0u;
@@ -68,4 +76,11 @@ private:
 	//Vector3 velociy_;
 
 	const float_t radius_ = 2.0f;
+
+	// 3Dレティクル用ワールドトランスフォーム
+	WorldTransform worldTransform3DReticle_;
+
+
+		// テクスチャハンドル
+	uint32_t ReticleTextureHandle_ = 0u;
 };

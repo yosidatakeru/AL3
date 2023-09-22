@@ -12,6 +12,7 @@ Player::~Player()
 	{
 		delete bullet;
 	}
+
 }
 
 
@@ -20,17 +21,47 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	// 引数として受け取ったデータをメンバ変数に記録する
 	this->model_ = model;
 	this->textureHandle_ = textureHandle;
-
+	ReticleTextureHandle_ = TextureManager::Load("reticle.png");
 	// ワールド変数の初期化
 	worldTransform_.Initialize();
 
 	// シングルトンインスタンスを取得
 	input_ = Input::GetInstance();
+
+	//レティクル
+	worldTransform3DReticle_.Initialize();
 }
 void Player::Update() {
+
+
+	//////////////////
+	// 時期の3dレティクルの距離
+	const float kDistancePlayerTo3DReticle = 50.0f;
+
+	// じきから3Dレティクルへの距離
+	Vector3 offset = {0, 0, 1.0f};
+
+	offset = TransformNormal(offset, worldTransform_.matWorld_);
+
+	// ベクトルの長さを整える
+	offset = {
+	    Normalize(offset).x * kDistancePlayerTo3DReticle,
+	    Normalize(offset).y * kDistancePlayerTo3DReticle,
+	    Normalize(offset).z * kDistancePlayerTo3DReticle,
+	};
+	Vector3 newOffset = Add(offset, GetWorldPosition());
+	// 3Dベクトルの座標を設定
+	worldTransform3DReticle_.translation_ = newOffset;
+	worldTransform3DReticle_.UpdeateMatrix();
+	worldTransform3DReticle_.TransferMatrix();
+//////////////////////////
+
+
 	////行列を定数バッファに転送する
 	worldTransform_.TransferMatrix();
 
+	//レティクル定義
+	//ReticleUpdate(viewProjection);
 	////移動ベクトルの設定
 	////基本斜め移動
 
@@ -123,17 +154,29 @@ void Player::Attack()
 
 	if (input_->TriggerKey(DIK_SPACE)) 
 	{
-		const float kBulletSpeed = 1.0f;
+		
 		Vector3 velocity(0, 0, kBulletSpeed);
 
 
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initalize(model_, worldTransform_.translation_, velocity);
-
+		
 		
 
+		velocity = Subtract(GetReticleWorldPosition(), GetWorldPosition());
+		velocity = Normalize(velocity);
+		velocity = {
+		    Normalize(velocity).x * kBulletSpeed,
+		    Normalize(velocity).y * kBulletSpeed,
+		    Normalize(velocity).z * kBulletSpeed,
+		};
+		
+		//回転に合わせる
+		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+
+
+		
 		// 弾を登録する
 		bullets_.push_back(newBullet);
 	}
@@ -146,6 +189,7 @@ void Player::OnCollision() {}
 void Player::Draw(ViewProjection& viewProjection_) {
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 	
+	model_->Draw(worldTransform3DReticle_, viewProjection_, ReticleTextureHandle_);
 	
 	for (PlayerBullet* bullet : bullets_) 
 	{
@@ -162,6 +206,25 @@ Vector3 Player::GetWorldPosition()
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
+}
+
+
+void Player::ReticleUpdate(ViewProjection viewProjection) 
+{
+	
+}
+
+Vector3 Player::GetReticleWorldPosition() {
+
+	// ワールド座標を取得
+	Vector3 worldPos{};
+
+	// ワールド行列の平行移動成分を取得(ワールド座標)
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
 	return worldPos;
 }
 

@@ -30,3 +30,6 @@ float Length(const Vector3& v);
 Vector3 Normalize(const Vector3& v);
 
 Matrix4x4 Inverse(const Matrix4x4 m);
+
+// 減算
+Vector3 Subtract(const Vector3 v1, const Vector3 v2);
