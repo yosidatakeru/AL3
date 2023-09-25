@@ -13,6 +13,7 @@
 #include"Enemy.h"
 #include"Skydome.h"
 #include"RailCamera.h"
+#include"sstream"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -50,6 +51,20 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllCollision();
 
+	//弾リスト
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+
+
+	void generatedEnemy(Vector3 pos);
+
+	void LoadEnemyPopDate();
+
+
+	/// <summary>
+	/// スクリプト実行
+	/// </summary>
+	void UpdateEnemyPopCommands();
+
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -69,6 +84,12 @@ private: // メンバ変数
 	Model* enemyModel_ = nullptr;
 	Enemy* enemy_ = nullptr;
 
+	// 敵弾リスト
+	std::list<EnemyBullet*> enemyBullets_;
+
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
+
 	#pragma region 天球のメンバ変数
 	// テクスチャハンドル
 	uint32_t skydomeTextureHandle_ = 0u;
@@ -79,4 +100,13 @@ private: // メンバ変数
 	// 天球ポインタ
 	Skydome* skydome_ = nullptr;
 	RailCamera* railCamera_ = nullptr;
+
+	// 待機フラグ
+	bool isEnemyStay = false;
+
+	// 待機タイマー
+	uint32_t enemyStayTimer = 0;
+
+	// 敵リスト
+	std::list<Enemy*> enemys_;
 };

@@ -19,12 +19,12 @@ Enemy::~Enemy()
 
 
 
-    void Enemy::Initialize(Model* model, const Vector3& position, const Vector3& velocity) 
+    void Enemy::Initialize(Model* model, const Vector3& pos) 
     {
 	// NULLチェック
 	assert(model);
 
-	phase_ = Phase::Approach;
+	
 	
 
 
@@ -34,12 +34,15 @@ Enemy::~Enemy()
 	// ワールド変数の初期化
 	worldTransform_.Initialize();
 	// 引数で受け取った初期座標をセット
-	worldTransform_.translation_ = position;
-	velocity_ = velocity;
+	worldTransform_.Initialize();
+	worldTransform_.translation_.x = pos.x;
+	worldTransform_.translation_.y = pos.y;
+	worldTransform_.translation_.z = pos.z;
+	
 	//Fire();
 	PhaseInitialize();
 	
-
+	phase_ = Phase::Approach;
     }
 
 

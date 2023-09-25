@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
+#include<fstream>
 
 GameScene::GameScene() {}
 
@@ -13,8 +14,9 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 
 	  /// delete enemy_;
-	delete enemy_;
-
+	for (Enemy* enemy : enemys_) {
+		delete enemy;
+	}
 	delete skydomeModel_;
 
 	delete railCamera_;
@@ -83,11 +85,15 @@ const float kEnemySpeed = -0.5f;
 
 	enemyModel_ = Model::Create();
 	enemy_ = new Enemy();
-	enemy_->Initialize(enemyModel_, enemyPosition, velocity);
-	
+	enemy_->Initialize(enemyModel_, enemyPosition);
+	// 敵キャラにゲームシーンを渡す
+	enemy_->SetGameScene(this);
 	// 敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_);
-
+	// 敵を登録する
+	enemys_.push_back(enemy_);
+	// 敵発生スクリプトの読み込み
+	LoadEnemyPopDate();
 	/////////////////////////
 
 	railCamera_ = new RailCamera();
@@ -131,26 +137,25 @@ void GameScene::CheckAllCollision() {
 	// 自キャラと敵弾全ての当たり判定
 	for (EnemyBullet* bullet : enemyBullets) 
 	{
-		// 敵弾の座標
-		posB = bullet->GetWorldPosition();
+		for (Enemy* enemy : enemys_) {
+			// 敵弾の座標
+			posB = bullet->GetWorldPosition();
 
-		// 座標AとBの距離を求める
-		float distanceAB = 
-		    (posB.x - posA.x) * (posB.x - posA.x) + 
-			(posB.y - posA.y) * (posB.y - posA.y) + 
-			(posB.z - posA.z) * (posB.z - posA.z);
+			// 座標AとBの距離を求める
+			float distanceAB = (posB.x - posA.x) * (posB.x - posA.x) +
+			                   (posB.y - posA.y) * (posB.y - posA.y) +
+			                   (posB.z - posA.z) * (posB.z - posA.z);
 
-		float RadiusAB = (player_->GetRadius() + bullet->GetRadius()) +
-		               (player_->GetRadius() + bullet->GetRadius());
+			float RadiusAB = (player_->GetRadius() + bullet->GetRadius()) +
+			                 (player_->GetRadius() + bullet->GetRadius());
 
-		if (distanceAB <=RadiusAB) {
-		// 自キャラの衝突時コールバックを呼び出す
-		player_->OnCollision();
-		// 敵弾の衝突時コールバックを呼び出す
-		bullet->OnCollision();
-
-	}
-		
+			if (distanceAB <= RadiusAB) {
+				// 自キャラの衝突時コールバックを呼び出す
+				player_->OnCollision();
+				// 敵弾の衝突時コールバックを呼び出す
+				bullet->OnCollision();
+			}
+		}
 	}
 
 #pragma endregion
@@ -163,29 +168,31 @@ void GameScene::CheckAllCollision() {
 
 	// 自キャラと敵弾全ての当たり判定
 	for (PlayerBullet* playerBullet : playerBullets) {
-		// 自弾の座標
-		posD = playerBullet->GetWorldPosition();
+		for (Enemy* enemy : enemys_) {
+			// 自弾の座標
+			posD = playerBullet->GetWorldPosition();
 
-		float distanceCD=
-			(posC.x - posD.x) * (posC.x - posD.x) +
-		    (posC.y - posD.y) * (posC.y - posD.y) +
-			(posC.z - posD.z) * (posC.z - posD.z);
-		// 座標CとDの距離を求める
-		float RadiusCD = (player_->GetRadius() + playerBullet->GetRadius()) +
-		                 (player_->GetRadius() + playerBullet->GetRadius());
+			float distanceCD = (posC.x - posD.x) * (posC.x - posD.x) +
+			                   (posC.y - posD.y) * (posC.y - posD.y) +
+			                   (posC.z - posD.z) * (posC.z - posD.z);
+			// 座標CとDの距離を求める
+			float RadiusCD = (player_->GetRadius() + playerBullet->GetRadius()) +
+			                 (player_->GetRadius() + playerBullet->GetRadius());
 
-		if (distanceCD <= RadiusCD) {
-			// 敵キャラの衝突時コールバックを呼び出す
-			enemy_->OnCollision();
+			if (distanceCD <= RadiusCD) {
+				// 敵キャラの衝突時コールバックを呼び出す
+				enemy_->OnCollision();
 
-			// 自弾の衝突時コールバックを呼び出す
-			playerBullet->OnCollision();
+				// 自弾の衝突時コールバックを呼び出す
+				playerBullet->OnCollision();
+			}
 		}
-
-		
 	}
 
+
+
 #pragma endregion
+
 }
 
 
@@ -200,13 +207,21 @@ void GameScene::Update()
 	debugCamera_->Update();
 
 	// 敵
-	enemy_->Update();
-
+	for (Enemy* enemy : enemys_) 
+	{
+		enemy_->Update();
+	}
 	skydome_->Update();
 
 	CheckAllCollision();
 
-	
+	enemyBullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 
 	Matrix4x4 cameraMatrix = {};
 	cameraMatrix.m[0][0] = 1.0f;
@@ -289,8 +304,16 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 
 	// 敵の描画
-	enemy_->Draw(viewProjection_);
+	for (Enemy* enemy : enemys_)
+	{
+		enemy_->Draw(viewProjection_);
+	}
 
+	// 敵弾リストの更新処理
+	for (EnemyBullet* enemyBullet : enemyBullets_) 
+	{
+		enemyBullet->Draw(viewProjection_);
+	}
 	skydome_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
@@ -309,4 +332,111 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+// ゲームシーンに弾を登録する
+void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
+
+	// リストに登録する
+	enemyBullets_.push_back(enemyBullet);
+}
+
+
+void GameScene::LoadEnemyPopDate()
+{
+	std::ifstream file;
+	file.open("Resources/ebenyPos.csv");
+	assert(file.is_open());
+
+	// ファイルの内容を文字列ストリームにコピー
+	enemyPopCommands << file.rdbuf();
+
+	// ファイルを閉じる
+	file.close();
+}
+void GameScene::UpdateEnemyPopCommands()
+{
+
+	// 待機処理
+	if (isEnemyStay) {
+
+		// 待機タイマーを減らす
+		enemyStayTimer--;
+
+		// 待機タイマーが0以下になったら待機終了
+		if (enemyStayTimer <= 0) {
+
+			// 待機終了
+			isEnemyStay = false;
+		}
+
+		return;
+	}
+
+	// 1行分の文字列を入れる関数
+	std::string line;
+
+	// コマンド実行ループ
+	while (std::getline(enemyPopCommands, line)) {
+
+		// 1行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		std::string word;
+		// , 区切りで行の先頭文字列を取得
+		std::getline(line_stream, word, ',');
+
+		// "//"から始まる行はコメント
+		if (word.find("//") == 0) {
+			// コメント行を飛ばす
+			continue;
+		}
+
+		// POPコマンド
+		if (word.find("POP") == 0) {
+
+			// X座標
+			std::getline(line_stream, word, ',');
+			float x = (float)std::atof(word.c_str());
+
+			// Y座標
+			std::getline(line_stream, word, ',');
+			float y = (float)std::atof(word.c_str());
+
+			// Z座標
+			std::getline(line_stream, word, ',');
+			float z = (float)std::atof(word.c_str());
+
+			// 敵を生成し、初期化
+			generatedEnemy(Vector3(x, y, z));
+		}
+
+		// WAITコマンド
+		else if (word.find("WAIT") == 0) {
+			std::getline(line_stream, word, ',');
+
+			// 待ち時間
+			int32_t waitTime = std::atoi(word.c_str());
+
+			// 待機開始
+			isEnemyStay = true;
+			enemyStayTimer = waitTime;
+
+			break;
+		}
+	}
+
+};
+
+
+void GameScene::generatedEnemy(Vector3 pos) {
+
+	enemy_ = new Enemy();
+	enemy_->Initialize(model_, pos);
+	// 敵キャラにゲームシーンを渡す
+	enemy_->SetGameScene(this);
+	// 敵キャラに自キャラのアドレスを渡す
+	enemy_->SetPlayer(player_);
+	// 敵を登録する
+	// enemys_.push_back(enemy_);
 }

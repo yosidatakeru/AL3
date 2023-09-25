@@ -6,6 +6,9 @@
 
 class Player;
 
+// gameSceneの前方宣言
+class GameScene;
+
 class Enemy 
 {
 public:
@@ -16,7 +19,7 @@ public:
 	//	/// <summary>
 	//	/// 初期化
 	//	/// </summary>
-	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
+	void Initialize(Model* model, const Vector3& position);
 	//
 	//	/// <summary>
 	//	/// 更新
@@ -53,7 +56,15 @@ public:
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
+		void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+
+
 private:
+
+	// ゲームシーン
+	GameScene* gameScene_ = nullptr;
+
+
 	// ワールドトランスホーム:
 	WorldTransform worldTransform_;
 	// モデルポインター
