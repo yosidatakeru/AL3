@@ -13,6 +13,7 @@
 #include"Enemy.h"
 #include"Skydome.h"
 #include"RailCamera.h"
+#include<sstream>
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -55,28 +56,49 @@ public: // メンバ関数
 
 	void GenerateEnemy(Vector3 position);
 
-private: // メンバ変数
-	DirectXCommon* dxCommon_ = nullptr;
-	Input* input_ = nullptr;
-	Audio* audio_ = nullptr;
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void LoadEnemyPopDate();
 
 	/// <summary>
-	/// ゲームシーン用
+	/// スクリプト実行
 	/// </summary>
-	// 3Dモデル
-	Model* model_ = nullptr;
-	uint32_t textureHandle_ = 0;
-	ViewProjection viewProjection_;
+	void UpdateEnemyPopCommands();
+
+private: // メンバ変数
+
+	/* ----- Player 自キャラ ----- */
+
 	Player* player_ = nullptr;
-	bool isDebgCameraActive_ = false;
-	DebugCamera* debugCamera_ = nullptr;
 
-
+	/* ----- Enemy 敵キャラ ----- */
 
 	Model* enemyModel_ = nullptr;
 	Enemy* enemy_ = nullptr;
 
-	#pragma region 天球のメンバ変数
+	
+	uint32_t enemyTexture_ = 0;
+	// 引っ越し
+	// 1.敵弾リストを敵からゲームシーンに引っ越す
+	std::list<EnemyBullet*> enemyBullets_;
+
+		// さっさと引っ越し
+	std::list<Enemy*> enemyes_;
+
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
+
+	// 待機タイマー
+	uint32_t enemyStayTimer = 0;
+
+	// 待機フラグ
+	bool isEnemyStay = false;
+
+	// 待機中フラグ
+	bool isWait_;
+	/* ----- SkyDome 天球 ----- */
+
 	// テクスチャハンドル
 	uint32_t skydomeTextureHandle_ = 0u;
 
@@ -87,7 +109,34 @@ private: // メンバ変数
 	Skydome* skydome_ = nullptr;
 	RailCamera* railCamera_ = nullptr;
 
-	// 引っ越し
-	// 1.敵弾リストを敵からゲームシーンに引っ越す
-	std::list<EnemyBullet*> enemyBullets_;
+	
+	
+
+	/* ----- Camera カメラ ----- */
+	DirectXCommon* dxCommon_ = nullptr;
+	bool isDebgCameraActive_ = false;
+	DebugCamera* debugCamera_ = nullptr;
+
+	Input* input_ = nullptr;
+	Audio* audio_ = nullptr;
+
+	/// <summary>
+	/// ゲームシーン用
+	/// </summary>
+	// 3Dモデル
+	Model* model_ = nullptr;
+	uint32_t textureHandle_ = 0;
+	ViewProjection viewProjection_;
+	
+	
+
+
+	
+	
+
+	
+	
+	
+
+	
 };

@@ -25,6 +25,8 @@ public:
 
 	float_t GetRadius() { return radius_; }
 
+	bool IsDead() const { return isDead_; }
+
 private:
 	uint32_t textureHandle_=0u;
 	Model* model_;

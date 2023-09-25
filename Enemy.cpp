@@ -2,24 +2,21 @@
 #include "Function.h"
 #include <cassert>
 //#include"Player.h"
+#include <imgui.h>
+#include "GameScene.h"
 
-
+#include "ImGuiManager.h"
 
 Enemy::~Enemy()
 {
-	//弾の解放処理
-	//複数出たのでfor文で解放しよう
-	for (EnemyBullet* bullet : bullets_) 
-	{
-		delete bullet;
-	}
+	
 	delete model_;
 }
 
 
 
 
-    void Enemy::Initialize(Model* model, const Vector3& position, const Vector3& velocity) 
+    void Enemy::Initialize(Model* model, const Vector3& position) 
     {
 	// NULLチェック
 	assert(model);
@@ -35,7 +32,7 @@ Enemy::~Enemy()
 	worldTransform_.Initialize();
 	// 引数で受け取った初期座標をセット
 	worldTransform_.translation_ = position;
-	velocity_ = velocity;
+	//velocity_ = velocity;
 	//Fire();
 	PhaseInitialize();
 	
@@ -113,10 +110,10 @@ void Enemy::Update()
 
 
 
-	for (EnemyBullet* bullet : bullets_)
+	/*for (EnemyBullet* bullet : bullets_)
 	{
 		bullet->Update();
-	}
+	}*/
 	
 	//  ワールドトランスの更新
 	worldTransform_.UpdeateMatrix();
@@ -124,7 +121,15 @@ void Enemy::Update()
 	worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
 	
 	
+	// Enemyデバッグ
+	ImGui::Begin("EnemyDebug1");
 
+	// float3入力ボックス
+	ImGui::InputFloat3("EnemyPosition", &worldTransform_.translation_.x);
+	// float3スライダー
+	ImGui::SliderFloat3("EnemySlider", &worldTransform_.translation_.x, 0.0f, 40.0f);
+
+	ImGui::End();
 }
 
 
@@ -160,13 +165,16 @@ void Enemy::OnCollision() {}
 
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 
-	for (EnemyBullet* bullet : bullets_) 
-	{
+	/* for (EnemyBullet* bullet : bullets_) 
+	 {
 
 		bullet->Draw(viewProjection_);
-	}
+	 }*/
 	
     }
+
+
+
 
 
 	void Enemy::Fire()
@@ -188,6 +196,22 @@ Vector3 PlayerPos = player_->GetWorldPosition();
 	// intealize
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	// 弾をGameSceneに登録する
+	gameScene_->AddEnemyBullet(newBullet);
+	////bullets_.push_back(newBullet);
 
-	bullets_.push_back(newBullet);
+	if (isDead_ == false) {
+		// 弾を生成し、初期化
+		EnemyBullet* newEnemyBullet = new EnemyBullet();
+		newEnemyBullet->Initialize(model_, worldTransform_.translation_, velocity);
+
+		// 弾を登録する
+		// bullets_に要素を追加
+		gameScene_->AddEnemyBullet(newEnemyBullet);
+		// bullets_.push_back(newEnemyBullet);
+	}
+	
     }
+
+
+	

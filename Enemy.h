@@ -21,7 +21,7 @@ public:
 	//	/// <summary>
 	//	/// 初期化
 	//	/// </summary>
-	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
+	void Initialize(Model* model, const Vector3& position);
 	//
 	//	/// <summary>
 	//	/// 更新
@@ -58,7 +58,10 @@ public:
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+	void SetGameScene(GameScene* gameScene) 
+	{ gameScene_ = gameScene; }
+
+	bool IsDead() { return isDead_; }
 
 private:
 	// ワールドトランスホーム:
@@ -89,5 +92,7 @@ private:
 
 		// ゲームシーン
 	    GameScene* gameScene_ = nullptr;
+
+		bool isDead_ = false;
 
 };
