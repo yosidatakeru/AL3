@@ -2,7 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
-
+#include "GameScene.h"
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -84,7 +84,8 @@ const float kEnemySpeed = -0.5f;
 	enemyModel_ = Model::Create();
 	enemy_ = new Enemy();
 	enemy_->Initialize(enemyModel_, enemyPosition, velocity);
-	
+	// 敵キャラにゲームシーンを渡す
+	enemy_->SetGameScene(this);
 	// 敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_);
 
@@ -107,7 +108,10 @@ const float kEnemySpeed = -0.5f;
 
 }
 
-
+void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
+	// リストに登録する
+	enemyBullets_.push_back(enemyBullet);
+}
 
 
 
@@ -187,6 +191,8 @@ void GameScene::CheckAllCollision() {
 
 #pragma endregion
 }
+
+
 
 
 
@@ -309,4 +315,12 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::GenerateEnemy(Vector3 position) {
+	// 生成
+	enemy_ = new Enemy();
+
+	// 敵キャラにゲームシーンを渡す
+	enemy_->SetGameScene(this);
 }

@@ -4,7 +4,12 @@
 #include "WorldTransform.h"
 #include "EnemyBullet.h"
 
+
 class Player;
+
+class GameScene;
+
+
 
 class Enemy 
 {
@@ -53,6 +58,8 @@ public:
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+
 private:
 	// ワールドトランスホーム:
 	WorldTransform worldTransform_;
@@ -80,6 +87,7 @@ private:
 
 		const float_t radius_ = 1.0f;
 
-
+		// ゲームシーン
+	    GameScene* gameScene_ = nullptr;
 
 };

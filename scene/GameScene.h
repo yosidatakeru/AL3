@@ -50,6 +50,10 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllCollision();
 
+	// 登録用の関数 
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+
+	void GenerateEnemy(Vector3 position);
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -66,6 +70,9 @@ private: // メンバ変数
 	Player* player_ = nullptr;
 	bool isDebgCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
+
+
+
 	Model* enemyModel_ = nullptr;
 	Enemy* enemy_ = nullptr;
 
@@ -79,4 +86,8 @@ private: // メンバ変数
 	// 天球ポインタ
 	Skydome* skydome_ = nullptr;
 	RailCamera* railCamera_ = nullptr;
+
+	// 引っ越し
+	// 1.敵弾リストを敵からゲームシーンに引っ越す
+	std::list<EnemyBullet*> enemyBullets_;
 };
