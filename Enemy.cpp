@@ -14,6 +14,7 @@
 	worldTransform_.Initialize();
 	// 引数で受け取った初期座標をセット
 	worldTransform_.translation_ = position;
+
 	velocity_ = velocity;
     }
 
