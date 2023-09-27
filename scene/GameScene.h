@@ -12,6 +12,7 @@
 #include <DebugCamera.h>
 #include"Enemy.h"
 #include"Skydome.h"
+#include "RailCamera.h"
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -62,9 +63,10 @@ private: // メンバ変数
 	Model* model_ = nullptr;
 	uint32_t textureHandle_ = 0;
 	ViewProjection viewProjection_;
+
+
 	Player* player_ = nullptr;
-	bool isDebgCameraActive_ = false;
-	DebugCamera* debugCamera_ = nullptr;
+	
 	Model* enemyModel_ = nullptr;
 	Enemy* enemy_ = nullptr;
 
@@ -77,4 +79,10 @@ private: // メンバ変数
 
 	// 天球ポインタ
 	Skydome* skydome_ = nullptr;
+
+	bool isDebgCameraActive_ = false;
+	DebugCamera* debugCamera_ = nullptr;
+
+	// レールカメラ
+	RailCamera* railCamera_ = nullptr;
 };
